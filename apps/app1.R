@@ -3,14 +3,14 @@ library(shiny)
 # Set up user interface
 ui <- fluidPage(
   textInput("name", "Enter a name:"),
-  textOutput("q")
+  textOutput("question")
 )
 
 # Set up server
 server <- function(input,
                    output,
                    session){
-  output$q <- renderText({
+  output$question <- renderText({
     paste0("Do you prefer dogs or cats, ",
           input$name,"?")
   })
