@@ -2,16 +2,28 @@
 
 library(shiny)
 library(babynames)
-library(ggplot2)
+library(tidyverse)
 
 ui <- fluidPage(
-  textInput("name","Enter name here:", "David"),
-  plotOutput("trend")
+  sidebarLayout(
+    sidebarPanel(
+      textInput("name","Enter name here:", "David"),
+    ),
+    mainPanel(
+      plotOutput("trend")
+    )
+  )
 )
 
 server <- function(input, output, session){
+
   output$trend <- renderPlot({
-    ggplot()
+    data <- babynames %>% 
+      filter(name == input$name)
+    
+    ggplot(data) +
+      aes(x=year, y=prop, color=sex) +
+      geom_line()
   })
 }
 
