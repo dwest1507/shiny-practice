@@ -9,7 +9,7 @@ library(DT)
 ui <-
   fluidPage(
     titlePanel("Top 10 Popular Baby Names"),
-    theme = shinytheme("slate"),
+    theme = shinytheme("darkly"),
     
     sidebarLayout(
       sidebarPanel(
@@ -20,7 +20,16 @@ ui <-
                     value = min(babynames$year))
       ),
       mainPanel(
-        DTOutput("table")
+        tabsetPanel(
+          tabPanel(
+            "Plot",
+            plotOutput("plot")
+          ),
+          tabPanel(
+            "Table",
+            DTOutput("table")
+          )
+        )
       )
     )
   )
@@ -32,6 +41,12 @@ server <- function(input, output){
              year==input$year) %>% 
       top_n(10)
   }
+  
+  output$plot <- renderPlot({
+    ggplot(top_10_table()) +
+      aes(x=name,y=prop)+
+      geom_col()
+  })
   
   output$table <- renderDT(top_10_table())
   
