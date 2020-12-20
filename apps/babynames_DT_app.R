@@ -1,6 +1,7 @@
 # Creating an interactive data table app for baby names
 
 library(shiny)
+library(shinythemes)
 library(babynames)
 library(tidyverse)
 library(DT)
@@ -8,6 +9,7 @@ library(DT)
 ui <-
   fluidPage(
     titlePanel("Top 10 Popular Baby Names"),
+    theme = shinytheme("slate"),
     
     sidebarLayout(
       sidebarPanel(
