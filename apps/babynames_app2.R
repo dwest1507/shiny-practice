@@ -35,20 +35,23 @@ ui <-
   )
 
 server <- function(input, output){
-  top_10_table <- function(){
-    data <- babynames %>% 
+
+  rval_data <- reactive({
+    babynames %>% 
       filter(sex==input$sex,
              year==input$year) %>% 
       top_n(10)
-  }
+  })
   
   output$plot <- renderPlot({
-    ggplot(top_10_table()) +
+    ggplot(rval_data()) +
       aes(x=name,y=prop)+
       geom_col()
   })
   
-  output$table <- renderDT(top_10_table())
+  output$table <- renderDT({
+    rval_data()
+    })
   
 }
 
