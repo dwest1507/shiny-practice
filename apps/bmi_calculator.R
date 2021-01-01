@@ -27,6 +27,10 @@ server <- function(input, output, session){
     {input$weight/input$height^2})
   
   output$result <- renderText({
+    validate(
+      need(input$name != "", "Be sure to enter your name.")
+    )
+    
     paste0("Hi ",
            input$name,
            "! Your BMI is ",
