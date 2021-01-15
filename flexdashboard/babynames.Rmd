@@ -1,0 +1,117 @@
+---
+title: "Baby Name Popularity"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(shiny)
+library(shinythemes)
+library(babynames)
+library(tidyverse)
+library(DT)
+```
+
+Column {data-width=550}
+-----------------------------------------------------------------------
+
+### Popularity over Time
+
+```{r}
+ui <- fluidPage(
+  titlePanel("Popularity of a Baby Name over Time"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      textInput("name","Enter name here:", "David"),
+    ),
+    mainPanel(
+      plotOutput("trend")
+    )
+  )
+)
+
+server <- function(input, output, session){
+
+  output$trend <- renderPlot({
+    data <- babynames %>% 
+      filter(name == input$name)
+    
+    ggplot(data) +
+      aes(x=year, y=prop, color=sex) +
+      geom_line() +
+      ylab("Proportion of Babies with this Name") +
+      xlab("Year")
+  })
+}
+
+shinyApp(ui=ui, server=server)
+```
+
+Column {data-width=450, .tabset}
+-----------------------------------------------------------------------
+
+### By Year
+
+```{r}
+ui <-
+  fluidPage(
+    titlePanel("Top 10 Popular Baby Names"),
+    
+    sidebarLayout(
+      sidebarPanel(
+        selectInput("sex", "Select sex", choices = c("M","F")),
+        sliderInput("year", "Select year", 
+                    min = min(babynames$year), 
+                    max = max(babynames$year),
+                    value = min(babynames$year))
+      ),
+      mainPanel(
+        tabsetPanel(
+          tabPanel(
+            "Plot",
+            plotOutput("plot")
+          ),
+          tabPanel(
+            "Table",
+            DTOutput("table")
+          )
+        )
+      )
+    )
+  )
+
+server <- function(input, output){
+
+  rval_data <- reactive({
+    babynames %>% 
+      filter(sex==input$sex,
+             year==input$year) %>% 
+      top_n(10)
+  })
+  
+  output$plot <- renderPlot({
+    ggplot(rval_data()) +
+      aes(x=name,y=prop)+
+      geom_col()
+  })
+  
+  output$table <- renderDT({
+    rval_data()
+    })
+  
+}
+
+shinyApp(ui=ui, server=server)
+```
+
+### Another Tab
+
+```{r}
+print("Nothing to see here.")
+```
+
