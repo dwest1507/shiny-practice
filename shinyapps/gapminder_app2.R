@@ -19,7 +19,6 @@ my_css <- "
 
 ui <- fluidPage(
   h1("Gapminder"),
-  # Add the CSS that we wrote to the Shiny app
   tags$style(my_css),
   tabsetPanel(
     tabPanel(
